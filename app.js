@@ -12,9 +12,9 @@ const ItemController = (function() {
   // Data Structure
   const data = {
     items: [
-      {id: 0, name: 'Steak Dinner', calories: 1200},
-      {id: 1, name: 'Cookies', calories: 900},
-      {id: 2, name: 'Eggs', calories: 300},
+      // {id: 0, name: 'Steak Dinner', calories: 1200},
+      // {id: 1, name: 'Cookies', calories: 900},
+      // {id: 2, name: 'Eggs', calories: 300},
     ],
     currentItem: null,
     totalCalories: 0
@@ -80,6 +80,8 @@ const UIController = (function() {
       }
     },
     addListItem: function(item) {
+      // Show the list
+      document.querySelector(UISelectors.itemList).style.display = 'block';
       // Create li element
       const li = document.createElement('li');
       // Add Class
@@ -98,6 +100,9 @@ const UIController = (function() {
     clearInput: function() {
       document.querySelector(UISelectors.itemNameInput).value = '';
       document.querySelector(UISelectors.itemCaloriesInput).value = '';
+    },
+    hideList: function() {
+      document.querySelector(UISelectors.itemList).style.display = 'none';
     },
     // Make UI Selectors public
     getSelectors: function() {
@@ -143,8 +148,13 @@ const App = (function(ItemController, UIController) {
       // Fetch Items from data structure
       const items = ItemController.getItems();
 
-      // Populate Items from data structure
-      UIController.populateItemList(items);
+      // Check for items
+      if(items.length === 0) {
+        UIController.hideList();
+      } else {
+        // Populate Items from data structure
+        UIController.populateItemList(items);
+      } 
 
       // Load Event Listeners
       loadEventListeners();
