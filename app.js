@@ -31,16 +31,39 @@ const ItemController = (function() {
 })();
 // UI Controller
 const UIController = (function() {
-  
+  const UISelectors = {
+    itemList: '#item-list'
+  }
+  return {
+    populateItemList: function(items) {
+      let html = '';
+      items.forEach(function(item) {
+        html += `
+        <li class="collection-item" id="${item.id}">
+          <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+          <a href="#" class="secondary-content">
+            <i class="edit-item fa fa-pencil"></i>
+          </a>
+        </li>        
+        `;
+      });
+
+      // Insert List Items
+      document.querySelector(UISelectors.itemList).innerHTML = html;
+    }
+  }
 })();
 // App Controller
 const App = (function(ItemController, UIController) {
   return {
     init: function() {
+      console.log('Iniitializing App ...');
 
       // Fetch Items from data structure
       const items = ItemController.getItems();
-      
+
+      // Populate Items from data structure
+      UIController.populateItemList(items);
     }
   }
 })(ItemController, UIController);
