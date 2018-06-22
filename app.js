@@ -1,5 +1,33 @@
 // Storage Controller
+const StorageController = (function() {
 
+  return {
+    storeItem: function(item) {
+      let items;
+      if (localStorage.getItem('items') === null) {
+        items = [];
+        items.push(item);
+        // Set local storage
+        localStorage.setItem('items', JSON.stringify(items));
+      } else {
+        // Get items from w/in local storage
+        items = JSON.parse(localStorage.getItem('items'));
+        items.push(item);
+        // Reset local storage
+        localStorage.setItem('items', JSON.stringify(items));
+      } 
+    },
+    getItemsFromStorage: function() {
+      let items;
+      if(localStorage.getItem('items') === null) {
+        items = [];
+      } else {
+        items = JSON.parse(localStorage.getItem('items'));
+      }
+      return items;
+    }
+  }
+})();
 // Item Controller
 const ItemController = (function() {
   // Item Constructor
@@ -11,11 +39,12 @@ const ItemController = (function() {
 
   // Data Structure
   const data = {
-    items: [
-      // {id: 0, name: 'Steak Dinner', calories: 1200},
-      // {id: 1, name: 'Cookies', calories: 900},
-      // {id: 2, name: 'Eggs', calories: 300},
-    ],
+    // items: [
+    //   // {id: 0, name: 'Steak Dinner', calories: 1200},
+    //   // {id: 1, name: 'Cookies', calories: 900},
+    //   // {id: 2, name: 'Eggs', calories: 300},
+    // ],
+    items: StorageController.getItemsFromStorage(),
     currentItem: null,
     totalCalories: 0
   }
@@ -223,7 +252,7 @@ const UIController = (function() {
   }
 })();
 // App Controller
-const App = (function(ItemController, UIController) {
+const App = (function(ItemController, StorageController, UIController) {
 
   // Load Event Listeners
   const loadEventListeners = function() {
@@ -276,6 +305,9 @@ const App = (function(ItemController, UIController) {
       const totalCalories = ItemController.getTotalCalories();
 
       UIController.showTotalCalories(totalCalories);
+
+      // Store in Local Storage
+      StorageController.storeItem(newItem);
 
       // Clear fields
       UIController.clearInput();
@@ -392,7 +424,7 @@ const App = (function(ItemController, UIController) {
       loadEventListeners();
     }
   }
-})(ItemController, UIController);
+})(ItemController, StorageController, UIController);
 
     // Initialize App
 App.init();
