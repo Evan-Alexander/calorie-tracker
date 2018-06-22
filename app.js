@@ -64,6 +64,9 @@ const ItemController = (function() {
       });
       return found;
     },
+    clearAllItems: function() {
+      data.items = [];
+    },
     deleteItem: function(id) {
       // Get ids
       const ids = data.items.map(function(item) {
@@ -108,6 +111,7 @@ const UIController = (function() {
     updateBtn: '.update-btn',
     deleteBtn: '.delete-btn',
     backBtn: '.back-btn',
+    clearBtn: '.clear-btn',
     itemNameInput: '#item-name',
     itemCaloriesInput: '#item-calories',
     totalCalories: '.total-calories'
@@ -184,6 +188,15 @@ const UIController = (function() {
       document.querySelector(UISelectors.itemCaloriesInput).value = ItemController.getCurrentItem().calories;
       UIController.showEditState();
     },
+    removeItems: function() {
+      let listItems = document.querySelectorAll(UISelectors.listItems);
+      // Turn Node list into array
+      listItems = Array.from(listItems);
+      
+      listItems.forEach(function(item) {
+        item.remove();
+      });
+    },
     hideList: function() {
       document.querySelector(UISelectors.itemList).style.display = 'none';
     },
@@ -238,8 +251,11 @@ const App = (function(ItemController, UIController) {
     // Update item event
     document.querySelector(UISelectors.deleteBtn).addEventListener('click', itemDeleteSubmit);
 
-    // Update item event
+    // Clear current item state event
     document.querySelector(UISelectors.backBtn).addEventListener('click', UIController.clearEditState);
+
+    // Clear all items event
+    document.querySelector(UISelectors.clearBtn).addEventListener('click', clearAllItemsClick);
   }
 
   // Add item submit
@@ -332,6 +348,23 @@ const App = (function(ItemController, UIController) {
     UIController.clearEditState();
 
     e.preventDefault();
+  }
+
+  // Clear All Items
+  const clearAllItemsClick = function() {
+    // Delete all items from data structure
+    ItemController.clearAllItems();
+
+    // Get total calories
+    const totalCalories = ItemController.getTotalCalories();
+
+    UIController.showTotalCalories(totalCalories);
+
+    // Remove from UI
+    UIController.removeItems();
+
+    // Hide UL
+    UIController.hideList();
   }
 
   return {
