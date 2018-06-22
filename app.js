@@ -64,6 +64,18 @@ const ItemController = (function() {
       });
       return found;
     },
+    deleteItem: function(id) {
+      // Get ids
+      const ids = data.items.map(function(item) {
+        return item.id;
+      });
+
+      // Get index
+      const index = ids.indexOf(id);
+
+      // Remove item
+      data.items.splice(index, 1);
+    },
     setCurrentItem: function(item) {
       data.currentItem = item;
     },
@@ -158,6 +170,11 @@ const UIController = (function() {
         }
       });
     },
+    deleteListItem: function(id) {
+      const itemID = `#item-${id}`;
+      const item = document.querySelector(itemID);
+      item.remove();
+    },
     clearInput: function() {
       document.querySelector(UISelectors.itemNameInput).value = '';
       document.querySelector(UISelectors.itemCaloriesInput).value = '';
@@ -197,6 +214,7 @@ const App = (function(ItemController, UIController) {
 
   // Load Event Listeners
   const loadEventListeners = function() {
+
     // Get UI Selectors
     const UISelectors = UIController.getSelectors();
 
@@ -216,6 +234,12 @@ const App = (function(ItemController, UIController) {
 
     // Update item event
     document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
+
+    // Update item event
+    document.querySelector(UISelectors.deleteBtn).addEventListener('click', itemDeleteSubmit);
+
+    // Update item event
+    document.querySelector(UISelectors.backBtn).addEventListener('click', UIController.clearEditState);
   }
 
   // Add item submit
@@ -278,6 +302,27 @@ const App = (function(ItemController, UIController) {
 
     // Update UI
     UIController.updateListItem(updatedItem);
+
+    // Get total calories
+    const totalCalories = ItemController.getTotalCalories();
+
+    UIController.showTotalCalories(totalCalories);
+
+    UIController.clearEditState();
+
+    e.preventDefault();
+  }
+
+  // Delete button event
+  const itemDeleteSubmit = function(e) {
+    // Get current item
+    const currentItem = ItemController.getCurrentItem();
+
+    // Delete from data structure
+    ItemController.deleteItem(currentItem.id);
+
+    // Delete from UI
+    UIController.deleteListItem(currentItem.id);
 
     // Get total calories
     const totalCalories = ItemController.getTotalCalories();
